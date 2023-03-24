@@ -1,0 +1,18 @@
+h3.title {
+    text-align: center;
+    padding: 30px;
+}
+
+.map {
+    margin: 0 auto;
+    height: 600px;
+    width: 1200px;
+    border-radius: 10px;
+    border: 5px black solid;
+    padding: 30px;
+}
+
+.link-map h2 {
+    text-align: center;
+    padding: 30px;
+}
