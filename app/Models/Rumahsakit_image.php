@@ -5,8 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Marker extends Model
+class Rumahsakit_image extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function rumahsakit(){
+        return $this->belongsTo(Rumahsakit::class);
+    }
 }

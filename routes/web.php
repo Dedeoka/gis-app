@@ -1,7 +1,14 @@
 <?php
 
+
+use App\Http\Controllers\LayananController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MarkerController;
+use App\Http\Controllers\RumahSakitController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\AjaxUserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +20,16 @@ use App\Http\Controllers\MarkerController;
 |
 */
 
-Route::get('/', [App\Http\Controllers\MarkerController::class, 'show']);
 
-Route::resource('/map', MarkerController::class);
+// Route::get('/', function () {
+//     return view('add-pages.poliklinik-pages');
+//     });
+Route::resource('/ajaxuser', AjaxUserController::class);
+Route::resource('/', UserController::class);
+
+Auth::routes();
+Route::resource('/map', RumahSakitController::class);
+Route::resource('/poli', PoliklinikController::class);
+Route::resource('/lab', LabController::class);
+Route::resource('/layanan', LayananController::class);
+Route::resource('/room', RoomController::class);

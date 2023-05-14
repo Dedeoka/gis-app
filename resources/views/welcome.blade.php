@@ -9,10 +9,16 @@
 
     <!-- Boostrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/MarkerCluster.Default.css" />
 
     <!--JQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
@@ -23,7 +29,54 @@
   </head>
   <body>
     @include('sweetalert::alert')
-    <h3 class="title">Add Marker Hospital Map With Leaflet</h3>
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    {{ __('Admin Marker Hospital') }}
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Left Side Of Navbar -->
+                    <ul class="navbar-nav me-auto">
+
+                    </ul>
+
+                    <!-- Right Side Of Navbar -->
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Authentication Links -->
+                        @guest
+                            @if (Route::has('login'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                </li>
+                            @endif
+
+                            @if (Route::has('register'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item dropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                        {{ __('Logout') }}
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
+                            </li>
+                        @endguest
+                    </ul>
+                </div>
+            </div>
+        </nav>
     <div class="map" id="map"></div>
 
     <!-- Modal create -->
@@ -57,8 +110,33 @@
                 @enderror
               </div>
               <div class="mb-1">
+                <label for="type" class="col-form-label">Tipe Rumah Sakit</label>
+                <select class="form-control costume-form-input @error('type') is-invalid @enderror" id="type" name="type" aria-placeholder="type" >
+                    <option value="" selected disabled hidden>Type</option>
+                    <option value="Rumah sakit umum">Rumah Sakit Umum</option>
+                    <option value="Rumah sakit swasta">Rumah Sakit Swatsa</option>
+                    <option value="Rumah sakit khusus">Rumah Sakit Khusus</option>
+                </select>
+                @error('type')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="mb-1">
+                <label for="kelas" class="col-form-label">Kelas Rumah Sakit</label>
+                <select class="form-control costume-form-input @error('kelas') is-invalid @enderror" id="kelas" name="kelas" aria-placeholder="kelas" >
+                    <option value="" selected disabled hidden>Kelas</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+                @error('kelas')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="mb-1">
                 <label for="email" class="col-form-label">Email</label>
-                <input type="text" class="form-control form-control-sm @error('email') is-invalid @enderror" id="email" name="email" placeholder="email..." required />
+                <input type="text" class="form-control form-control-sm @error('email') is-invalid @enderror" id="email" name="email" placeholder="Email..." required />
                 @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -67,6 +145,13 @@
                 <label for="phone" class="col-form-label">Phone</label>
                 <input type="text" class="form-control form-control-sm @error('phone') is-invalid @enderror" id="phone" name="phone" placeholder="Phone..." required />
                 @error('phone')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="mb-1">
+                <label for="operational" class="col-form-label">Jam Oprasional</label>
+                <input type="text" class="form-control form-control-sm @error('operational') is-invalid @enderror" id="operational" name="operational" placeholder="24 jam..." required />
+                @error('operational')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
@@ -84,6 +169,15 @@
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
+            </div>
+            <div class="form-container">
+                <div class="form-group px-3">
+                <label for="thumbnail_name">Thumbnail Rumah Sakit</label>
+                <input type="file" name="thumbnail_name" id="thumbnail_name" class="form-control costume-form-file @error('thumbnail_name') is-invalid @enderror" value="{{ old('thumbnail_name') }}">
+                @error('thumbnail_name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                </div>
             </div>
             <div class="modal-footer mt-3">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -112,44 +206,18 @@
         popupAnchor: [0, -30],
       });
 
-      @foreach ($spaces as $item)
-        L.marker([{{ $item->latitude }},{{ $item->longitude }}], {icon: markerIcon,})
-          .bindPopup(
-          `
-            <div class="" style="width: 18rem;">
-              <h4 class="pt-3 pb-1" style="text-align: center">{{$item->name}}</h4>
-              <div class="border-top border-bottom">
-                <table class="table table-borderless my-1">
-                  <tbody>
-                    <tr>
-                      <th width="10px">Email</th>
-                      <td>{{$item->email}}</td>
-                    </tr>
-                    <tr>
-                      <th width="10px">Phone:</th>
-                      <td>{{$item->phone}}</td>
-                    </tr>
-                    <tr>
-                      <th width="10px">Address</th>
-                      <td>{{$item->address}}</td>
-                    </tr>
-                    <tr>
-                      <th width="10px">Description</th>
-                      <td>{{$item->description}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-                <form action="{{ route('map.destroy', $item->id) }}" method="POST">
-                    @method('delete')
-                    @csrf
-                    <button class="btn btn-danger" style="text-align:center">Delete</button>
-                </form>
-            </div>
-          `
-        ).addTo(map);
+      var cluster = L.markerClusterGroup();
+
+
+      @foreach ($data as $item)
+        var mark = cluster.addLayer(L.marker([{{ $item->latitude }},{{ $item->longitude }}], {icon: markerIcon}))
+        .on('click', function(e) {
+            window.location.href = "{{ url('map', ['id' => $item->id]) }}";
+        });
+
       @endforeach
 
+      map.addLayer(cluster);
 
       var marker;
 
@@ -179,15 +247,6 @@
       $('#modalCreate').on('hidden.bs.modal', function () {
         map.removeLayer(marker)
       })
-
-      @if (!session()->has('record_created'))
-        <script>
-            Toast.fire({
-                icon: 'success',
-                title: 'New record has been added successfully!'
-            });
-        </script>
-    @endif
     </script>
   </body>
 </html>

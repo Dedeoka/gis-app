@@ -11,15 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('markers', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
+        Schema::create('rumahsakits', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->nullable();
+            $table->string('type')->nullable();
+            $table->string('kelas')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
+            $table->string('operational')->nullable();
             $table->string('address')->nullable();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->string('description')->nullable();
+            $table->string('thumbnail_name')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('markers');
+        Schema::dropIfExists('rumahsakits');
     }
 };
